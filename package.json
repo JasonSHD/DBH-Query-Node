@@ -1,0 +1,19 @@
+{
+  "name": "davis-facade",
+  "version": "1.0.0",
+  "description": "Facade to help with the CORS requests needed by Davis Query App",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Jason Bennett",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.15.0",
+    "express": "^4.13.4",
+    "q": "^1.4.1",
+    "request": "^2.69.0",
+    "underscore": "^1.8.3",
+    "xml2js": "^0.4.16"
+  }
+}
