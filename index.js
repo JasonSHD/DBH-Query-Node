@@ -2,11 +2,13 @@ var express = require('express');
 var app = express();
 var request = require('request');
 var oigService = require('./oig');
+var samService = require('./sam');
 var htmlparser = require('htmlparser2');
 var bodyParser = require('body-parser');
 var _ = require('underscore');
 var Q = require('q');
 var easysoap = require('easysoap');
+var soap = require('soap');
 
 app.use(bodyParser());
 
@@ -26,8 +28,6 @@ app.post('/', function(req, res) {
 app.get('/whatbrowser', function(req, res) {
   request = request.defaults({
     headers: {
-      'Accept': '*/*',
-      'Cache-Control': 'no-cache',
       'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/48.0.2564.103 Safari/537.36'
     }
   });
@@ -42,48 +42,7 @@ app.get('/whatbrowser', function(req, res) {
   });
 });
 
-/**
- * https://gw.sam.gov/SAMWS/1.0/ExclusionSearch
- */
-app.get('/sam', function (req, res) {
-  var params = {
-    host: 'https://gw.sam.gov',
-    path: '/SAMWS/1.0/ExclusionSearch',
-    wsdl: '/SAMWS/1.0/ExclusionSearch?wsdl'
-  };
-
-  var soapClient = easysoap.createClient(params);
-
-  soapClient.getAllFunctions()
-    .then(function(funcArray) {
-      console.log(funcArray);
-    }).catch(function(error) {
-      console.log(error);
-      res.send(error);
-    });
-
-  soapClient.getMethodParamsByName('doSsnSearch')
-    .then(function(funcArray) {
-      console.log(funcArray);
-      res.send(funcArray);
-    }).catch(function(error) {
-      console.log(error);
-      res.send(error);
-    });
-
-  soapClient.call({
-    method: 'doSsnSearch',
-    params: {
-      OperationExSSNSearchType: '595602000'
-    }
-  }).then(function(body) {
-    console.log(body.response.body);
-  }).catch(function(error) {
-    console.log(error);
-  });
-
-  console.log('Sending wsdl request');
-});
+app.get('/sam', samService);
 
 app.get('/oigInit', oigService);
 

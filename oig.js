@@ -1,3 +1,5 @@
+var validation = require('./validate.js');
+
 var request = require('request');
 var htmlparser = require('htmlparser2');
 var bodyParser = require('body-parser');
@@ -87,14 +89,6 @@ function oig(req, res) {
     }
   });
 
-  /**
-   * Required parameters for this endpoint.
-   */
-  var requiredParams = [
-    'lastName',
-    'firstName'
-  ];
-
   // Setup our wrappered request object with default header values.
   request = request.defaults({
     jar: cookieJar,
@@ -104,8 +98,8 @@ function oig(req, res) {
   });
 
   // Validation of endpoint request.
-  if (validateRequest() !== null) {
-    res.status(400).send(validateRequest());
+  if (validation(req) !== null) {
+    res.status(400).send(validation(req));
   }
 
   // Start the fetch chain to oig.
@@ -171,19 +165,6 @@ function oig(req, res) {
 
     return paramList;
   };
-
-  /**
-   * Validate that the request to the endpoint has the required parameters.
-   *
-   * @return Object The missing parameters or null if everything is accounted for.
-   */
-  function validateRequest() {
-    var paramsDiff = _.difference(requiredParams, _.allKeys(req.query));
-    if (paramsDiff.length !== 0) {
-      return {error: { message: 'Missing Params', details: paramsDiff}};
-    }
-    return null;
-  }
 
   /**
    * The main controller for the full request for individual OIG info.
